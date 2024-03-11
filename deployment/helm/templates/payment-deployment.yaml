@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payment-label
+
+  template:
+    metadata:
+      labels:
+        app: payment-label
+    spec:
+      containers:
+        - name: payment
+          image: rizomus/camunda-payment
+          ports:
+            - containerPort: 8013
+              name: web
+          env:
+            - name: DATABASE_URL
+              value: "jdbc:postgresql://payment-db-svc:5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: POSTGRES_PASSWORD
+
+

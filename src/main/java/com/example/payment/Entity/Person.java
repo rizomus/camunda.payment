@@ -33,7 +33,7 @@ public class Person {
     @JoinColumn(name = "person_id")
     private List<Wallet> wallets = new ArrayList<>();
 
-    public Payment makePayment(BigDecimal amount, CurrencyUnit paymentCurrency, String receiver) {
+    public Payment makePayment(BigDecimal amount, CurrencyUnit paymentCurrency, String receiver, long orderId) {
 
         boolean result = false;
 
@@ -48,6 +48,7 @@ public class Person {
 
         var payment = Payment.builder()
                 .amount(amount)
+                .orderId(orderId)
                 .currencyUnit(paymentCurrency)
                 .timestamp(LocalDateTime.now())
                 .successful(result)
@@ -67,7 +68,8 @@ public class Person {
         BigDecimal amount = paymentDto.amount();
         CurrencyUnit paymentCurrency = CurrencyUnit.valueOf(paymentDto.currencyUnit());
         String receiver = paymentDto.receiver();
+        long orderId = paymentDto.orderId();
 
-        return makePayment(amount, paymentCurrency, receiver);
+        return makePayment(amount, paymentCurrency, receiver, orderId);
     }
 }

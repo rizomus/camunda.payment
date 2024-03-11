@@ -8,8 +8,10 @@ import java.math.BigDecimal;
 public record PaymentDto(
 
     BigDecimal amount,
+    long orderId,
     String currencyUnit,
     long payerId,
     String receiver,
-    boolean successful)
+    boolean successful
+)
 {}

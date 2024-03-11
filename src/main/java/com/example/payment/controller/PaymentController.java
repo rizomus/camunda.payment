@@ -22,24 +22,26 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
+
     private void addPerson(String name) {
         ArrayList<Wallet> wallets = new ArrayList<>();
+
         wallets.add(
                 Wallet.builder()
-                        .balance(BigDecimal.valueOf(Math.random() * 1000))
+                        .balance(BigDecimal.valueOf(Math.random() * 10000))
                         .currencyUnit(CurrencyUnit.RUB)
                         .build()
         );
 
         wallets.add(
                 Wallet.builder()
-                        .balance(BigDecimal.valueOf(Math.random() * 1000))
+                        .balance(BigDecimal.valueOf(Math.random() * 10000))
                         .currencyUnit(CurrencyUnit.EUR)
                         .build()
         );
         wallets.add(
                 Wallet.builder()
-                        .balance(BigDecimal.valueOf(Math.random() * 1000))
+                        .balance(BigDecimal.valueOf(Math.random() * 10000))
                         .currencyUnit(CurrencyUnit.USD)
                         .build()
         );
@@ -49,16 +51,17 @@ public class PaymentController {
                 .wallets(wallets)
                 .build();
 
-        BigDecimal amount = BigDecimal.valueOf(Math.random() * 1000);
+        BigDecimal amount = BigDecimal.valueOf(Math.random() * 10000);
         System.out.println("\n  BALANCE: " + wallets.get(0).getBalance());
         System.out.println("        Try to make payment of " + amount + "\n");
 
-        Payment payment = person.makePayment(amount, CurrencyUnit.RUB, "Bank");
+        Payment payment = person.makePayment(amount, CurrencyUnit.RUB, "Bank", 3210L);
 
         System.out.println("Returned payment amount: " + payment.getAmount() + "\n");
 
         Long id = paymentService.createNewPerson(person);
     }
+
 
     @PostMapping("/test-content-load")
     public ResponseEntity<String> testContentLoad() {
@@ -70,21 +73,22 @@ public class PaymentController {
         return new ResponseEntity<>("Content created", HttpStatus.CREATED);
     }
 
-    @PostMapping("pay")
-    private ResponseEntity<PaymentDto> pay(@RequestBody PaymentDto paymentDto) {
 
-        PaymentDto dto = null;
+    @PostMapping("pay")
+    private ResponseEntity<PaymentDto> pay(@RequestBody PaymentDto paymentRequest) {
+
+        PaymentDto paymentDto = null;
 
         try {
-            dto = paymentService.makePayment(paymentDto);
+            paymentDto = paymentService.makePayment(paymentRequest);
         } catch (PersonNotFoundException e) {
-            return new ResponseEntity<>(paymentDto, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(paymentRequest, HttpStatus.NOT_FOUND);
         }
 
-        if (dto.successful()) {
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        if (paymentDto.successful()) {
+            return new ResponseEntity<>(paymentDto, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(dto, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(paymentDto, HttpStatus.BAD_REQUEST);
         }
 
     }

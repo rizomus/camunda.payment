@@ -21,6 +21,12 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long Id;
 
+    @Version
+    long version;
+
+
+    long orderId;
+
     private String receiver;
 
     @ManyToOne
@@ -49,6 +55,7 @@ public class Payment {
     public PaymentDto getDto() {
         return new PaymentDto(
                 amount,
+                orderId,
                 currencyUnit.name(),
                 payerId,
                 receiver,

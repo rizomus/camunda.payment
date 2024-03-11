@@ -19,6 +19,9 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
+    @Version
+    long version;
+
     @Enumerated(EnumType.STRING)
     private CurrencyUnit currencyUnit;
 
@@ -27,6 +30,5 @@ public class Wallet {
     @ManyToOne
     @JoinColumn(name = "person_id")
     Person owner;
-
 
 }
