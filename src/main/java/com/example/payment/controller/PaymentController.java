@@ -4,12 +4,14 @@ import com.example.payment.Entity.*;
 import com.example.payment.Exceptions.PersonNotFoundException;
 import com.example.payment.dto.PaymentDto;
 import com.example.payment.service.PaymentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/payment")
+@Slf4j
 public class PaymentController {
 
     @Autowired
@@ -75,7 +78,9 @@ public class PaymentController {
 
 
     @PostMapping("pay")
-    private ResponseEntity<PaymentDto> pay(@RequestBody PaymentDto paymentRequest) {
+    public ResponseEntity<PaymentDto> pay(@RequestBody PaymentDto paymentRequest) {
+
+        log.debug("NEW PAYMENT: " + paymentRequest);
 
         PaymentDto paymentDto = null;
 
@@ -91,5 +96,20 @@ public class PaymentController {
             return new ResponseEntity<>(paymentDto, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/cancel-payment")
+    public ResponseEntity<Object> cancelPayment(@RequestParam long order_id) {
+
+        log.debug("Try to cancel payment for order " + order_id);
+
+        try {
+
+            paymentService.cancelPayment(order_id);
+
+        } catch (NullPointerException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 }

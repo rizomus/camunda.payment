@@ -1,5 +1,6 @@
 package com.example.payment.Entity;
 
+import com.example.payment.dto.PaymentCancelDto;
 import com.example.payment.dto.PaymentDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -66,10 +67,18 @@ public class Person {
 
     public Payment makePayment(PaymentDto paymentDto) {
         BigDecimal amount = paymentDto.amount();
+        if (amount.doubleValue() <= 0) {
+            throw new IllegalArgumentException("Payment amount < 0");
+        }
         CurrencyUnit paymentCurrency = CurrencyUnit.valueOf(paymentDto.currencyUnit());
         String receiver = paymentDto.receiver();
         long orderId = paymentDto.orderId();
 
         return makePayment(amount, paymentCurrency, receiver, orderId);
+    }
+
+
+    public void cancelPayment(PaymentCancelDto dto) {
+
     }
 }

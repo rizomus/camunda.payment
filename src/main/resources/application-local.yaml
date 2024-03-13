@@ -14,4 +14,4 @@ logging:
   level:
     root: INFO
     org.springframework: INFO
-    com.example.product: DEBUG
+    com.example.payment: DEBUG
